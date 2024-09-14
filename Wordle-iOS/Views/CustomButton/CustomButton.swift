@@ -30,6 +30,7 @@ struct CustomButton: View {
         }
         .buttonStyle(CustomButtonStyle( isEnabled: isEnabled))
         .disabled(isLoading)
+        .animation(.default, value: isEnabled)
     }
 
 }
