@@ -9,11 +9,16 @@ import SwiftUI
 
 struct GameKeyboard: View {
 
+    // MARK: - Constants
+
     let qwertyRows: [[Character]] = [
         ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
         ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
         ["Z", "X", "C", "V", "B", "N", "M", "⌫"]
     ]
+    let hapticFeedback = UIImpactFeedbackGenerator(style: .light)
+
+    // MARK: - Properties
 
     @State var correctPositionKeys: [Character] = []
     @State var wrongPositionKeys: [Character] = []
@@ -39,6 +44,8 @@ struct GameKeyboard: View {
                 HStack(spacing: 4) {
                     ForEach(row, id: \.self) { key in
                         Button(action: {
+                            hapticFeedback.impactOccurred()
+
                             if key == "⌫" {
                                 onBackspaceKeyPress()
                             } else {
@@ -67,7 +74,8 @@ struct GameKeyboard: View {
                     print("\(qwertyRows[0].count)")
                     print("\(viewWidth)")
                 }
-        })    }
+        })
+    }
 
     func colorOfTheKey(_ key: Character) -> Color {
         if correctPositionKeys.contains(key) {
