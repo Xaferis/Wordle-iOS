@@ -15,6 +15,12 @@ final class GameViewModel: ObservableObject {
     @Published var guessedLineIndex: Int
     @Published var guessedLineCharIndex: Int
 
+    @Published var correctPositionChars = Set<Character>()
+    @Published var wrongPositionChars = Set<Character>()
+    @Published var notPresentChars = Set<Character>()
+
+    private let guessedWord = "TRAIL"
+
     // MARK: - Computed
 
     var isCurrentGuessedLineFilled: Bool { lines[guessedLineIndex].isLineFilled }
@@ -54,12 +60,67 @@ extension GameViewModel {
     func submit() {
         guard isCurrentGuessedLineFilled else { return }
 
-        guessedLineIndex += 1
+        compare()
+
+        if lines[guessedLineIndex].chars.allSatisfy({ $0.type == .rightPosition }) {
+            Task {
+                try await Task.sleep(for: .seconds(2))
+
+                await MainActor.run {
+                    reset()
+                }
+            }
+        } else {
+            guessedLineIndex += 1
+            guessedLineCharIndex = 0
+        }
+    }
+
+}
+
+// MARK: - Private
+
+private extension GameViewModel {
+
+    func compare() {
+        let mainWord = Array(guessedWord)
+
+        lines[guessedLineIndex].chars.enumerated().forEach { index, char in
+            guard let value = char.value else { return }
+
+            if value == mainWord[index] {
+                addToCorrectPosition(char: value)
+                lines[guessedLineIndex].chars[index].type = .rightPosition
+            } else if mainWord.contains(value) {
+                addToWrongPosition(char: value)
+                lines[guessedLineIndex].chars[index].type = .wrongPosition
+            } else {
+                notPresentChars.insert(value)
+                lines[guessedLineIndex].chars[index].type = .notUsed
+            }
+        }
+    }
+
+    func addToCorrectPosition(char: Character) {
+        wrongPositionChars.remove(char)
+        correctPositionChars.insert(char)
+
+    }
+
+    func addToWrongPosition(char: Character) {
+        guard !correctPositionChars.contains(char) else { return }
+
+        wrongPositionChars.insert(char)
+    }
+
+    func reset() {
+        lines = (1...6).map { GuessedLine(id: "\($0)") }
+        guessedLineIndex = 0
         guessedLineCharIndex = 0
 
-        print("Submit")
-        print("line index \(guessedLineIndex)")
-        print("char index \(guessedLineCharIndex)")
+        correctPositionChars.removeAll(keepingCapacity: false)
+        wrongPositionChars.removeAll(keepingCapacity: false)
+        notPresentChars.removeAll(keepingCapacity: false)
     }
 
 }

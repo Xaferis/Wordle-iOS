@@ -20,14 +20,16 @@ struct GameKeyboard: View {
 
     // MARK: - Properties
 
-    @State var correctPositionKeys: [Character] = []
-    @State var wrongPositionKeys: [Character] = []
-    @State var notPresentKeys: [Character] = []
+    @Binding var correctlyPlacedKeys: Set<Character>
+    @Binding var wronglyPlacedKeys: Set<Character>
+    @Binding var notPresentKeys: Set<Character>
 
     @State private var viewWidth: CGFloat = 0
 
     let onKeyPress: Callback<Character>
     let onBackspaceKeyPress: VoidClosure
+
+    // MARK: - Computed
 
     var keyWidth: CGFloat {
         let firstRowCount = qwertyRows[0].count
@@ -38,13 +40,15 @@ struct GameKeyboard: View {
 
     var backspaceKeyWidth: CGFloat { keyWidth * 1.5 }
 
+    // MARK: - Body
+
     var body: some View {
         VStack(spacing: 8) {
             ForEach(qwertyRows, id: \.self) { row in
                 HStack(spacing: 4) {
                     ForEach(row, id: \.self) { key in
                         Button(action: {
-                            hapticFeedback.impactOccurred()
+//                            hapticFeedback.impactOccurred()
 
                             if key == "⌫" {
                                 onBackspaceKeyPress()
@@ -77,18 +81,38 @@ struct GameKeyboard: View {
         })
     }
 
+}
+
+// MARK: - Private
+
+private extension GameKeyboard {
+
     func colorOfTheKey(_ key: Character) -> Color {
-        if correctPositionKeys.contains(key) {
-            return .teal
-        } else if wrongPositionKeys.contains(key) {
-            return .orange
-        } else {
+        switch key {
+        case _ where correctlyPlacedKeys.contains(key):
+            return .green
+
+        case _ where wronglyPlacedKeys.contains(key):
+            return .yellow
+
+        case _ where notPresentKeys.contains(key):
+            return .gray
+
+        default:
             return .gray.opacity(0.2)
         }
     }
 
 }
 
+// MARK: - Preview
+
 #Preview {
-    GameKeyboard(onKeyPress: { _ in }, onBackspaceKeyPress: {})
+    GameKeyboard(
+        correctlyPlacedKeys: .constant([]),
+        wronglyPlacedKeys: .constant([]),
+        notPresentKeys: .constant([]),
+        onKeyPress: { _ in },
+        onBackspaceKeyPress: {}
+    )
 }

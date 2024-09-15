@@ -35,7 +35,7 @@ struct GameView: View {
                         ForEach(line.chars) { char in
                             RoundedRectangle(cornerRadius: C.fieldCornerRadius)
                                 .stroke(.black, lineWidth: viewModel.lines[viewModel.guessedLineIndex] == line ? 6 : 3)
-//                                .background(type.color)
+                                .background(char.type.color)
                                 .cornerRadius(radius: C.fieldCornerRadius)
                                 .frame(maxWidth: 45, maxHeight: 55)
                                 .overlay {
@@ -51,7 +51,13 @@ struct GameView: View {
             .padding(.bottom, 16)
             .frame(maxHeight: .infinity, alignment: .center)
 
-            GameKeyboard(onKeyPress: viewModel.addChar(_:), onBackspaceKeyPress: viewModel.removeChar)
+            GameKeyboard(
+                correctlyPlacedKeys: $viewModel.correctPositionChars,
+                wronglyPlacedKeys: $viewModel.wrongPositionChars,
+                notPresentKeys: $viewModel.notPresentChars,
+                onKeyPress: viewModel.addChar(_:),
+                onBackspaceKeyPress: viewModel.removeChar
+            )
 
             CustomButton(title: "Submit") {
                 viewModel.submit()

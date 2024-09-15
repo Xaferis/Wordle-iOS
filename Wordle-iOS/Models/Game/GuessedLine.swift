@@ -11,6 +11,7 @@ struct GuessedLine: Identifiable, Equatable {
 
         var id: String
         var value: Character?
+        var type: GuessedType = .none
 
     }
 
