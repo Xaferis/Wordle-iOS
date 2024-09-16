@@ -5,8 +5,9 @@
 //  Created by Matúš Mištrik on 13/09/2024.
 //
 
-import SwiftUI
+import Combine
 
+@MainActor
 final class GameViewModel: ObservableObject {
 
     // MARK: - Properties
@@ -44,8 +45,6 @@ extension GameViewModel {
 
         lines[guessedLineIndex].changeChar(to: char, at: guessedLineCharIndex)
         guessedLineCharIndex += 1
-
-        print(guessedLineCharIndex)
     }
 
     func removeChar() {
@@ -53,8 +52,6 @@ extension GameViewModel {
 
         lines[guessedLineIndex].changeChar(to: nil, at: guessedLineCharIndex - 1)
         guessedLineCharIndex -= 1
-
-        print(guessedLineCharIndex)
     }
 
     func submit() {
@@ -66,9 +63,7 @@ extension GameViewModel {
             Task {
                 try await Task.sleep(for: .seconds(2))
 
-                await MainActor.run {
-                    reset()
-                }
+                reset()
             }
         } else {
             guessedLineIndex += 1
@@ -113,6 +108,7 @@ private extension GameViewModel {
         wrongPositionChars.insert(char)
     }
 
+    @MainActor
     func reset() {
         lines = (1...6).map { GuessedLine(id: "\($0)") }
         guessedLineIndex = 0

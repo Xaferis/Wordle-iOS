@@ -24,7 +24,7 @@ struct GameKeyboard: View {
     @Binding var wronglyPlacedKeys: Set<Character>
     @Binding var notPresentKeys: Set<Character>
 
-    @State private var viewWidth: CGFloat = 0
+    @State private var viewWidth: CGFloat = 200 // random value
 
     let onKeyPress: Callback<Character>
     let onBackspaceKeyPress: VoidClosure
@@ -74,9 +74,9 @@ struct GameKeyboard: View {
         .background(GeometryReader { geometry in
             Color.clear
                 .onAppear {
-                    self.viewWidth = geometry.size.width
-                    print("\(qwertyRows[0].count)")
-                    print("\(viewWidth)")
+                    if geometry.size.width > 0 {
+                        self.viewWidth = geometry.size.width
+                    }
                 }
         })
     }
