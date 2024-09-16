@@ -12,7 +12,7 @@ struct Application: App {
 
     var body: some Scene {
         WindowGroup {
-            GameView()
+            HomeView()
                 .preferredColorScheme(.light)
         }
     }

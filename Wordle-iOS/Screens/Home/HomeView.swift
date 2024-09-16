@@ -9,6 +9,8 @@ import SwiftUI
 
 struct HomeView: View {
 
+    @StateObject private var router = MainRouter()
+
     var body: some View {
         VStack {
             Text("Wordle")
@@ -17,12 +19,13 @@ struct HomeView: View {
                 .padding(.top, 120)
 
             CustomButton(title: "Play") {
-                print("Play button pressed")
+                router.push(to: .game)
             }
             .frame(maxHeight: .infinity, alignment: .center)
         }
         .padding()
         .frame(maxHeight: .infinity, alignment: .top)
+        .routableRoot(router: router)
     }
 
 }

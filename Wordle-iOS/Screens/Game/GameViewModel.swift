@@ -10,6 +10,10 @@ import Combine
 @MainActor
 final class GameViewModel: ObservableObject {
 
+    // MARK: Router
+
+    let router: MainRouter
+
     // MARK: - Properties
 
     @Published var lines: [GuessedLine]
@@ -28,10 +32,12 @@ final class GameViewModel: ObservableObject {
 
     // MARK: - Initializers
 
-    init() {
+    init(router: MainRouter) {
         lines = (1...6).map { GuessedLine(id: "\($0)") }
         guessedLineIndex = 0
         guessedLineCharIndex = 0
+
+        self.router = router
     }
 
 }

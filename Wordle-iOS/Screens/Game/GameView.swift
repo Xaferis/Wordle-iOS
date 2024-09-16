@@ -19,7 +19,7 @@ struct GameView: View {
 
     // MARK: - Properties
 
-    @StateObject private var viewModel: GameViewModel = .init()
+    @StateObject var viewModel: GameViewModel
 
     // MARK: - Body
 
@@ -70,5 +70,5 @@ struct GameView: View {
 }
 
 #Preview {
-    GameView()
+    GameView(viewModel: .init(router: .init()))
 }
